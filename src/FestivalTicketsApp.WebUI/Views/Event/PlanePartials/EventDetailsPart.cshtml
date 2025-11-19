@@ -1,0 +1,42 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Event.PlaneEventViewModel
+
+@{
+    string currentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    
+    List<SelectListItem> eventTypeOptions = Model.EventTypes
+        .Select(dto => 
+            new SelectListItem { Value = dto.Id.ToString(), Text = dto.Name })
+        .ToList();
+
+    List<SelectListItem> typeGenreOptions = Model.TypeGenres
+        .Select(dto =>
+            new SelectListItem { Value = dto.Id.ToString(), Text = dto.Name })
+        .ToList();
+}
+
+<div class="row gy-3">
+    <div class="col-4">
+        <label asp-for="NewEventInfo.Title"></label>
+        <input class="form-control mt-2" asp-for="NewEventInfo.Title" />
+    </div>
+    <div class="col-4">
+        <label asp-for="NewEventInfo.StartTime">Start date</label>
+        <input type="datetime-local" class="form-control mt-2" asp-for="NewEventInfo.StartTime" min="@currentTime" />
+    </div>
+    <div class="col-4">
+        <label asp-for="NewEventInfo.Duration">Duration in minutes</label>
+        <input type="number" class="form-control mt-2" asp-for="NewEventInfo.Duration" min="1" oninput="validity.valid||(value='');" />
+    </div>
+    <div class="col-6">
+        <label asp-for="NewEventInfo.EventTypeId">Event type</label>
+        <select class="form-control mt-2" asp-for="NewEventInfo.EventTypeId" asp-items="@eventTypeOptions"></select>
+    </div>
+    <div class="col-6">
+        <label asp-for="NewEventInfo.GenreId">Genre</label>
+        <select class="form-control mt-2" asp-for="NewEventInfo.GenreId" asp-items="@typeGenreOptions"></select>
+    </div>
+    <div class="col-12">
+        <label asp-for="NewEventInfo.Description"></label>
+        <textarea class="form-control mt-2" asp-for="NewEventInfo.Description"></textarea>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+﻿@model List<FestivalTicketsApp.Application.EventService.DTO.EventDto>?
+
+<div class="container">
+    @if (Model is not null)
+    {
+        <div class="row row-cols-3 gy-3 mb-3">
+            @foreach (var eventDto in Model)
+            {
+                <a class="col bg-light shadow-sm text-decoration-none text-black p-2" asp-controller="Event" asp-action="Details" asp-route-id="@eventDto.Id">
+                    <p>@eventDto.Title</p>
+                    <p>@eventDto.HostName</p>
+                    <p>@eventDto.StartDate</p>
+                    <p>@eventDto.Status</p>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-center text">No events :(</p>
+    }
+</div>

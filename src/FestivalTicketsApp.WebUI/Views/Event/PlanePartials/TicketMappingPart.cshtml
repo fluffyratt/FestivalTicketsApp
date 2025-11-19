@@ -1,0 +1,35 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Event.PlaneEventViewModel
+
+@{
+    List<SelectListItem> mappingOptions = Model.NewEventInfo?.TicketTypes
+        ?.Select(dto => new SelectListItem { Value = dto.Name, Text = dto.Name })
+        .ToList() ?? new();
+}
+
+<partial name="Scene"/>
+
+@if (!Model.HallDetails.IsDivideBySeats)
+{
+    <div class="fan-zone justify-content-center align-items-center mt-auto mb-auto mx-2 d-flex flex-column h-50">
+        <h3 class="mt-auto mb-auto p-2">Fan zone</h3>
+
+        <div class="col-2 m-2">
+            <select class="mappingSelects form-control" asp-for="NewEventInfo.TypesMapping[0]" asp-items="mappingOptions"></select>
+        </div>
+    </div>
+}
+else
+{
+    for (int rowNum = 0; rowNum < Model.HallDetails.RowAmount; rowNum++)
+    {
+        <div class="row d-flex justify-content-center align-items-center mt-2">
+            <div class="col-3">
+                <p class="text-center mb-0">Row @(rowNum + 1)</p>
+            </div>
+
+            <div class="col-3">
+                <select class="mappingSelects form-control" asp-for="NewEventInfo.TypesMapping[rowNum]" asp-items="mappingOptions"></select>
+            </div>
+        </div>
+    }
+}

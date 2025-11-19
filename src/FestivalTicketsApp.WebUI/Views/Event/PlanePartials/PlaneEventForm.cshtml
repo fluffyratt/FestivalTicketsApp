@@ -1,0 +1,40 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Event.PlaneEventViewModel
+
+<div class="accordion-item">
+    <h2 class="accordion-header" id="eventDetailsHeading">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#eventDetailsBody" aria-expanded="true" aria-controls="eventDetailsBody">
+            Event details
+        </button>
+    </h2>
+    <div id="eventDetailsBody" class="accordion-collapse collapse show" aria-labelledby="eventDetailsHeading">
+        <div class="accordion-body">
+            <partial name="PlanePartials/EventDetailsPart" model="Model"/>
+        </div>
+    </div>
+</div>
+<div class="accordion-item">
+    <h2 class="accordion-header" id="ticketTypesHeading">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ticketTypesBody" aria-expanded="false" aria-controls="ticketTypesBody">
+            Ticket types
+        </button>
+    </h2>
+    <div id="ticketTypesBody" class="accordion-collapse collapse" aria-labelledby="ticketTypesHeading">
+        <div class="accordion-body container">
+            <partial name="PlanePartials/TicketTypesPart"/>
+        </div>
+    </div>
+</div>
+<div class="accordion-item">
+    <h2 class="accordion-header" id="ticketMappingHeading">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ticketMappingBody" aria-expanded="false" aria-controls="ticketMappingBody">
+            Ticket mapping
+        </button>
+    </h2>
+    <div id="ticketMappingBody" class="accordion-collapse collapse" aria-labelledby="ticketMappingHeading">
+        <div class="accordion-body container">
+            <partial name="PlanePartials/TicketMappingPart"/>
+
+            <button type="submit" class="btn btn-primary mt-3">Plane</button>
+        </div>
+    </div>
+</div>

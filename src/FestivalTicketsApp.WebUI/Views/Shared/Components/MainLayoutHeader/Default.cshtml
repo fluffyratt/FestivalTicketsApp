@@ -1,0 +1,14 @@
+﻿@model List<FestivalTicketsApp.Application.EventService.DTO.EventTypeDto>
+
+<nav class="navbar navbar-expand-lg">
+    <ul class="navbar-nav mx-auto">
+        @{
+            foreach (var eventType in Model)
+            {
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Event" as asp-action="List" asp-route-id="@eventType.Id">@eventType.Name</a>
+                </li>
+            }
+        }
+    </ul>
+</nav>

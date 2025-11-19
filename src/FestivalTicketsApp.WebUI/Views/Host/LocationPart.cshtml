@@ -1,0 +1,14 @@
+﻿@model FestivalTicketsApp.Application.HostService.DTO.LocationDto
+
+<h3 class="mb-2">Location info</h3>
+<p>City: @Model.CityName</p>
+<p>Street: @Model.StreetName</p>
+<p>Building number: @Model.BuildingNumber</p>
+<input id="hostLat" class="coordinates" type="text" hidden value="@Model.Latitude" />
+<input id="hostLong" class="coordinates" type="text" hidden value="@Model.Longitude" />
+@if (User.IsInRole(UserRolesConstants.Manager))
+{
+    <a class="btn btn-primary" asp-controller="Event" asp-action="Plane" asp-route-id="@ViewContext.RouteData.Values["id"]">
+        Plane new event
+    </a>
+}

@@ -1,0 +1,9 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Client.ClientFavouriteEventsViewModel
+
+<form id="eventListQuery" class="filterForm" asp-controller="Client" asp-action="Favourite" method="GET">
+    <input type="hidden"
+           id="favouriteEventsListPageNum"
+           class="filterPageNum"
+           asp-for="QueryState.PageNum"
+           value="@Model.QueryState.PageNum">
+</form>

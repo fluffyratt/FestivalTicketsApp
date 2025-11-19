@@ -1,0 +1,25 @@
+﻿@model ResultViewModel
+
+<div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resultModalLabel">@Model.Title</h5>
+            </div>
+            <div class="modal-body">
+                <p>@Model.Message</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const showModal = () => {
+        const modal = new bootstrap.Modal('#resultModal');
+        modal.show();
+    }
+    showModal();
+</script>

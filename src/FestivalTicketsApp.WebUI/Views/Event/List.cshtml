@@ -1,0 +1,7 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Event.EventListViewModel
+
+<div class="container h-100 d-flex flex-column">
+    <partial name="ListPartials/FilterPart" model="Model" />
+    <partial name="EventList" model="Model.Events"/>
+    <partial name="Pagination" model="@(new PaginationModel(Model.CurrentPageNum, Model.NextPagesAmount))"/>
+</div>

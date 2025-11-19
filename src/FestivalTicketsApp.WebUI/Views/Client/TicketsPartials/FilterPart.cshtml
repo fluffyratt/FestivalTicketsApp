@@ -1,0 +1,9 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Client.ClientTicketsViewModel
+
+<form id="purchasedTicketsQuery" class="filterForm" asp-controller="Client" asp-action="Tickets" method="GET">
+    <input type="hidden"
+           id="purchasedTicketsListPageNum"
+           class="filterPageNum"
+           asp-for="QueryState.PageNum"
+           value="@Model.QueryState.PageNum">
+</form>

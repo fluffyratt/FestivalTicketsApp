@@ -1,0 +1,8 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Client.ClientFavouriteEventsViewModel
+
+<div class="container h-100 d-flex flex-column">
+    <partial name="FavouritePartials/FilterPart" model="Model" />
+    <h2 class="fw-bold mb-3">Your favourites</h2>
+    <partial name="EventList" model="Model.Events" />
+    <partial name="Pagination" model="@(new PaginationModel(Model.CurrentPageNum, Model.NextPagesAmount))" />
+</div>

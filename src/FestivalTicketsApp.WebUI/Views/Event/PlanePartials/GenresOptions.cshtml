@@ -1,0 +1,6 @@
+﻿@model FestivalTicketsApp.Shared.Result<System.Collections.Generic.List<FestivalTicketsApp.Application.EventService.DTO.GenreDto>>
+
+@foreach (var option in Model.Value)
+{
+    <option value="@option.Id">@option.Name</option>
+}

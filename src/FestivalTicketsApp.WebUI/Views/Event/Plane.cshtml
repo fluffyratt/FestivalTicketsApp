@@ -1,0 +1,30 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Event.PlaneEventViewModel
+
+@{
+    const string resultTitle = "Success";
+    const string resultMessage = "Event has been created successfully";
+    const string actionTitle = "Plane event";
+    const string actionName = "Plane";
+}
+
+<partial name="_ValidationSummary"/>
+@if (Model.IsSucceed)
+{
+    <partial name="_ResultSummary" model="new ResultViewModel(resultTitle, resultMessage)" />
+}
+
+<div class="card h-100">
+    <div class="card-header">
+        <h1>@actionTitle</h1>
+    </div>
+    <form asp-controller="Event" asp-action="@actionName">
+        <input asp-for="NewEventInfo.HostId" value="@ViewContext.RouteData.Values["id"]" hidden/>
+        <partial name="PlanePartials/PlaneEventForm" model="Model"/>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/get-genres.js"></script>
+    <script src="~/js/manipulate-ticket-type.js"></script>
+}

@@ -1,0 +1,30 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Event.PlaneEventViewModel
+
+@{
+    int ticketTypesCount = Model.NewEventInfo?.TicketTypes?.Count ?? 0;
+    int maxTicketTypesCount = Model.HallDetails.IsDivideBySeats ? Model.HallDetails.RowAmount : 1;
+    bool addDisabled = ticketTypesCount == maxTicketTypesCount;
+}
+
+<div class="ticketTypesWrapper">
+    @for (int i = 0; i < ticketTypesCount; i++)
+    {
+        <div id="ticketType-@i" class="ticketTypeWrapper row mt-3">
+            <div class="col-4">
+                <label class='form-label' asp-for="NewEventInfo.TicketTypes[i].Name">Type name</label>
+                <input class="ticketTypeInput form-control" type="text" asp-for="NewEventInfo.TicketTypes[i].Name"/>
+            </div>
+            <div class="col-4">
+                <label class='form-label' asp-for="NewEventInfo.TicketTypes[i].Price">Price</label>
+                <input class="ticketTypePrice form-control" type="text" asp-for="NewEventInfo.TicketTypes[i].Price"/>
+            </div>
+            <div class="col-1 mt-auto">
+                <button id="deleteTicketType-@i" class="deleteTicketType btn btn-danger">Delete</button>
+            </div>
+        </div>
+    }
+    <input type="number" id="ticketTypesCount" value="@ticketTypesCount" hidden />
+    <input type="number" id="maxTicketTypesCount" value="@maxTicketTypesCount" hidden />
+</div>
+
+<button class="createTicketType btn btn-primary mt-3" @(addDisabled ? "disabled" : "")>Create ticket type</button>
