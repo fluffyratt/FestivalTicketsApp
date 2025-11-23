@@ -56,7 +56,4 @@ using SVG colour representation format (in ticket purchase screen)
 ![Image](https://i.imgur.com/Kr0enqF.png)
 
 #### Domain scheme:
-![Image](https://i.imgur.com/FNwgrGG.jpeg)
-
-#### Updated domain scheme (29.02.2024):
 ![Image](https://i.imgur.com/QmGrD4M.jpeg)
