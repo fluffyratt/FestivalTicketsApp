@@ -1,0 +1,34 @@
+﻿@page
+@model FestivalTicketsApp.IdentityServer.Pages.Account.Register.Index
+
+@{
+    Model.RegisterData.ShowRoleSelect = true;
+    Model.RegisterData.PageHandler = "/Account/Login";
+}
+
+<div class="register-page mx-auto">
+    <div class="lead mb-4">
+        <h1>Register</h1>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+                <partial name="_ValidationSummary"/>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Input your credentials</h2>
+                </div>
+
+                <div class="card-body">
+                    <partial name="Shared/RegistrationForm" model="Model.RegisterData"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="~/js/phone_mask.js"></script>
+    <script src="~/js/staff_code_input_state.js"></script>
+}

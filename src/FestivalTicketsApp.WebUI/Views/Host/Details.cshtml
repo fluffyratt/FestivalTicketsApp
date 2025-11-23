@@ -1,0 +1,26 @@
+﻿@model FestivalTicketsApp.WebUI.Models.Host.HostDetailsViewModel
+
+@{
+    const int mapHeight = 300;
+}
+
+<div class="container h-100 d-flex flex-column">
+    <h1 class="fw-bold">@Model.Host.Name</h1>
+    <div class="row mt-4">
+        <div class="col-9">
+            <partial name="DescriptionPart" model="Model.Host" />
+        </div>
+        <div class="col-3">
+            <partial name="LocationPart" model="Model.Host.Location" />
+        </div>
+    </div>
+    <partial name="MapPart" model="mapHeight" />
+    <partial name="SameHostEventsPart" model="Model.HostedEvents"/>
+</div>
+
+@section Scripts
+{
+    <script src="https://maps.googleapis.com/maps/api/js?"></script>
+    <script src="~/js/readonly-map.js"></script>
+}
+

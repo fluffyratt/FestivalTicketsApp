@@ -1,0 +1,31 @@
+﻿@using FestivalTicketsApp.Application.ClientService.DTO
+@model List<FestivalTicketsApp.Application.ClientService.DTO.FullInfoTicketDto>?
+
+@if (Model is not null)
+{
+    @foreach (FullInfoTicketDto? ticketDto in Model)
+    {
+        <div class="col-11 p-3 mb-2
+                    d-flex flex-row justify-content-between
+                    bg-light shadow-sm
+                    text-decoration-none text-black">
+            <p>@ticketDto.EventTitle</p>
+            <p>@ticketDto.TypeName</p>
+            <p>@ticketDto.Price $</p>
+            @if (ticketDto.SeatNum is not null
+              && ticketDto.RowNum is not null)
+            {
+                <p>Row @ticketDto.RowNum</p>
+                <p>Seat @ticketDto.SeatNum</p>
+            }
+            <p>@ticketDto.StartDate</p>
+            <a asp-controller="Event" asp-action="Details" asp-route-id="@ticketDto.EventId">
+                View details about event
+            </a>
+        </div>
+    }
+}
+else
+{
+    <p class="text-center text">No tickets :(</p>
+}
