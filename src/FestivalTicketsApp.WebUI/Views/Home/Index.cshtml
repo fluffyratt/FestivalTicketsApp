@@ -1,6 +1,80 @@
-﻿<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-    </p>
-</div>
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="hero">
+    <div class="hero-text">
+        <h1 class="hero-title mb-3">Welcome</h1>
+
+        <p class="hero-subtitle">
+            Welcome to <strong>FestivalTicketApp</strong> – your festival cinema platform.
+            Here you can explore the programme, choose a movie and a comfortable hall,
+            pick the best seats and buy tickets online in just a few clicks.
+        </p>
+
+        <p class="text-muted mt-4 small">
+            Project created by the FestivalTickets team, group <strong>ТК42</strong>.
+        </p>
+
+        <div class="hero-actions mt-3">
+            <a class="btn btn-primary"
+               asp-controller="Event"
+               asp-action="List"
+               asp-route-id="1">
+                Browse movies
+            </a>
+        </div>
+    </div>
+
+    <div class="hero-visual">
+        <div class="hero-main-poster">
+            <img src="~/images/cinema-hall.jpg"
+                 asp-append-version="true"
+                 class="js-enlarge-image"
+                 data-fullsrc="@Url.Content("~/images/cinema-hall.jpg")"
+                 alt="Cinema hall with big screen" />
+        </div>
+
+        <div class="hero-thumbs">
+            <img src="~/images/popcorn.jpg"
+                 asp-append-version="true"
+                 class="js-enlarge-image"
+                 data-fullsrc="@Url.Content("~/images/popcorn.jpg")"
+                 alt="Popcorn" />
+            <img src="~/images/projector.jpg"
+                 asp-append-version="true"
+                 class="js-enlarge-image"
+                 data-fullsrc="@Url.Content("~/images/projector.jpg")"
+                 alt="Projector" />
+            <img src="~/images/tickets.jpg"
+                 asp-append-version="true"
+                 class="js-enlarge-image"
+                 data-fullsrc="@Url.Content("~/images/tickets.jpg")"
+                 alt="Tickets" />
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const imgs = document.querySelectorAll('.js-enlarge-image');
+            const modalElement = document.getElementById('imageModal');
+            const modalImg = document.getElementById('imageModalImg');
+
+            if (!modalElement || !modalImg || imgs.length === 0) return;
+
+            const bsModal = new bootstrap.Modal(modalElement);
+
+            imgs.forEach(function (img) {
+                img.style.cursor = 'zoom-in';
+
+                img.addEventListener('click', function () {
+                    const fullSrc = this.getAttribute('data-fullsrc') || this.src;
+                    modalImg.src = fullSrc;
+                    bsModal.show();
+                });
+            });
+        });
+    </script>
+}
