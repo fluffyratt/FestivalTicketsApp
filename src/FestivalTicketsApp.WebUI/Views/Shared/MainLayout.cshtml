@@ -21,13 +21,41 @@
     <script src="https://kit.fontawesome.com/@(PublicKeys.Value.FontAwesomeKey).js" crossorigin="anonymous"></script>
 </head>
 <body class="d-flex flex-column min-vh-100 cinema-body">
-    <header class="cinema-header">
-        @await Component.InvokeAsync("MainLayoutHeader")
+
+    @* HEADER з меню + кнопками логіну/реєстрації *@
+    <header class="cinema-header d-flex justify-content-between align-items-center px-3">
+        @* Ліва частина – існуюче меню з компонента *@
+        <div class="flex-grow-1">
+            @await Component.InvokeAsync("MainLayoutHeader")
+        </div>
+
+        @* Права частина – кнопки логіну та реєстрації *@
+        <nav class="ms-3">
+            @if (User?.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                <a class="btn btn-outline-light me-2"
+                   asp-controller="Auth"
+                   asp-action="Login">
+                    Login
+                </a>
+                <a class="btn btn-primary"
+                   asp-controller="Auth"
+                   asp-action="Register">
+                    Register
+                </a>
+            }
+        </nav>
     </header>
 
     <div class="d-flex flex-grow-1 cinema-layout">
         <nav id="sideNav" class="col-2 cinema-sidebar">
-            @await Component.InvokeAsync("SideNavigation")
+            @* Тимчасово без SideNavigation, щоб не було NullReferenceException *@
+            @* Якщо потім полагодиш компонент, можна розкоментувати:
+            @if (User?.Identity != null && User.Identity.IsAuthenticated)
+            {
+                @await Component.InvokeAsync("SideNavigation")
+            }
+            *@
         </nav>
 
         <main role="main" class="col-10 flex-grow-1 cinema-main">
@@ -54,6 +82,10 @@
         </div>
     </div>
 
+    @* ВАЖЛИВО: секція Scripts, щоб не було InvalidOperationException *@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+
+

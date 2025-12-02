@@ -15,26 +15,29 @@ internal static class HostingExtensions
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddRazorPages();
-        
+
         builder.Services.AddScoped<IProfileService, ProfileService>();
 
+        // options з appsettings.json -> RegistrationCodesOptions
         builder.Services.ConfigureOptions<RegistrationCodesOptionsSetup>();
 
+        // HttpClient для основного застосунку (WebUI)
         builder.Services.AddHttpClient("FestivalTicketsApp", client =>
         {
             client.BaseAddress = new Uri("https://localhost:7129");
         });
-        
-        var migrationsAssembly = typeof(Program).Assembly.GetName().Name;
+
+        // -------- Identity + DbContext --------
         string? connectionString = builder.Configuration.GetConnectionString("IdentityLocalInstance");
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        builder.Services
+            .AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
-                
+
                 options.SignIn.RequireConfirmedAccount = false;
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
@@ -46,6 +49,7 @@ internal static class HostingExtensions
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+        // -------- IdentityServer з In-Memory конфігурацією --------
         builder.Services
             .AddIdentityServer(options =>
             {
@@ -56,32 +60,21 @@ internal static class HostingExtensions
                 options.EmitStaticAudienceClaim = true;
             })
             .AddDeveloperSigningCredential()
-            .AddConfigurationStore(options =>
-            {
-                options.ConfigureDbContext = b => 
-                    b.UseSqlServer(connectionString, sql => 
-                        sql.MigrationsAssembly(migrationsAssembly));
-            })
-            .AddOperationalStore(options =>
-            {
-                options.ConfigureDbContext = b => 
-                    b.UseSqlServer(connectionString, sql => 
-                        sql.MigrationsAssembly(migrationsAssembly));
-            })
+            // 🔽 тепер беремо клієнтів / ресурси з класу Config, а не з бази
+            .AddInMemoryIdentityResources(Config.IdentityResources)
+            .AddInMemoryApiScopes(Config.ApiScopes)
+            .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<ApplicationUser>();
 
+        // -------- Google OAuth (залишаємо як було) --------
         ExternalProviderCredentialOptions googleCredentials = builder.Configuration
             .GetSection($"{ExternalProviderCredentialOptionsSetup.RootSectionName}:Google")
             .Get<ExternalProviderCredentialOptions>()!;
-        
+
         builder.Services.AddAuthentication()
             .AddGoogle(options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                // register your IdentityServer with Google at https://console.developers.google.com
-                // enable the Google+ API
-                // set the redirect URI to https://localhost:5001/signin-google
                 options.ClientId = googleCredentials.ClientId;
                 options.ClientSecret = googleCredentials.ClientSecret;
             });

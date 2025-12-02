@@ -12,6 +12,11 @@ public class Client : BaseEntity
 
     public string Subject { get; set; } = default!;
 
+    public string PasswordHash { get; set; } = default!;
+
+    // НОВЕ: роль користувача ("User" або "Organizer")
+    public string Role { get; set; } = "User";
+
     public List<Ticket> PurchasedTickets { get; set; } = [];
 
     public List<Event> FavouriteEvents { get; set; } = [];

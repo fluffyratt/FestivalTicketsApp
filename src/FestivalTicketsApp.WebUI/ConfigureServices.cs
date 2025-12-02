@@ -12,7 +12,7 @@ using FestivalTicketsApp.WebUI.Options.PublicKeys;
 using FestivalTicketsApp.WebUI.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-
+using FestivalTicketsApp.WebUI.Services;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -36,52 +36,26 @@ public static class ConfigureServices
         return services;
     }
 
-    public static IServiceCollection AddExternalAuthentication(
-        this IServiceCollection services, 
-        IdentityServerOptions identityServerOptions)
-    {
-        services.AddAuthentication(options => 
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddOpenIdConnect(options =>
-            {
-                options.Authority = "https://localhost:5001";
-                
-                options.CallbackPath = "/signin-oidc";
-                options.SignedOutCallbackPath = "/signout-callback-oidc";
-                
-                options.ClientId = "FestivalTicketsApp";
-                options.ClientSecret = identityServerOptions.MvcClientSecret;
-                
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                
-                options.SaveTokens = true;
-                options.UsePkce = true;
-                
-                options.Scope.Add(OidcConstants.StandardScopes.OfflineAccess);
-                options.Scope.Add(OidcConstants.StandardScopes.OpenId);
-                options.Scope.Add("ClientInfo");
-                
-                options.Scope.Remove(OidcConstants.StandardScopes.Profile);
-                
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    RoleClaimType = JwtClaimTypes.Role,
-                    NameClaimType = JwtClaimTypes.GivenName
-                };
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.ClaimActions.MapAll();
+   public static IServiceCollection AddExternalAuthentication(
+    this IServiceCollection services,
+    IdentityServerOptions identityServerOptions)
+{
+    services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.LoginPath = "/Auth/Login";
+            options.LogoutPath = "/Auth/Logout";
+        });
 
-                options.Events.OnUserInformationReceived = OpenIdEventHandlers.OnUserInformationReceived;
-                options.Events.OnRemoteFailure = OpenIdEventHandlers.OnRemoteFailure;
-            });
-    
-        return services;
-    }
+    // no OpenIdConnect here anymore
+
+    return services;
+}
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
@@ -90,7 +64,8 @@ public static class ConfigureServices
         services.AddScoped<ITicketService, TicketService>();
         services.AddScoped<IClientService, ClientService>();
         services.AddScoped<IBackgroundJobsService, BackgroundJobsService>();
-
+        services.AddHttpContextAccessor();
+        services.AddScoped<AuthService>();
         return services;
     }
 

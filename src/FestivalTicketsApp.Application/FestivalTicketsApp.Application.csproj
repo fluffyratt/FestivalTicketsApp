@@ -1,14 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\FestivalTicketsApp.Infrastructure.Data\FestivalTicketsApp.Infrastructure.Data.csproj" />
-      <ProjectReference Include="..\FestivalTicketsApp.Shared\FestivalTicketsApp.Shared.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <!-- Додали посилання на Core -->
+    <ProjectReference Include="..\FestivalTicketsApp.Core\FestivalTicketsApp.Core.csproj" />
+    <ProjectReference Include="..\FestivalTicketsApp.Infrastructure.Data\FestivalTicketsApp.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\FestivalTicketsApp.Shared\FestivalTicketsApp.Shared.csproj" />
+  </ItemGroup>
 
 </Project>

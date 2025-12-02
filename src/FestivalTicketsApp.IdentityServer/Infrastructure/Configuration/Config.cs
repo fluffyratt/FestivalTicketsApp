@@ -12,11 +12,11 @@ public static class Config
             new IdentityResources.Profile(),
             new IdentityResource(
                 name: "ClientInfo",
-                userClaims: 
+                userClaims:
                 [
-                    JwtClaimTypes.Subject, 
-                    JwtClaimTypes.GivenName, 
-                    JwtClaimTypes.FamilyName, 
+                    JwtClaimTypes.Subject,
+                    JwtClaimTypes.GivenName,
+                    JwtClaimTypes.FamilyName,
                     JwtClaimTypes.Email,
                     JwtClaimTypes.PhoneNumber,
                     JwtClaimTypes.Role
@@ -27,6 +27,8 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
+            // за бажанням можеш додати свої скоупи
+            // new ApiScope("festival_api", "Festival API")
         };
 
     public static IEnumerable<Client> Clients =>
@@ -40,13 +42,17 @@ public static class Config
 
                 AllowedGrantTypes = GrantTypes.Code,
 
-                RedirectUris = { "https://localhost:7129/signin-oidc" },
-                PostLogoutRedirectUris = { "https://localhost:7129/signout-callback-oidc" },
-                
+                RedirectUris = { "https://localhost:5087/signin-oidc" },
+                PostLogoutRedirectUris = { "https://localhost:5087/signout-callback-oidc" },
+
                 RequirePkce = true,
                 AllowOfflineAccess = true,
-                AllowedScopes = { OidcConstants.StandardScopes.OpenId, "ClientInfo" },
-                    
+                AllowedScopes =
+                {
+                    OidcConstants.StandardScopes.OpenId,
+                    "ClientInfo"
+                },
+
                 CoordinateLifetimeWithUserSession = true
             },
         };

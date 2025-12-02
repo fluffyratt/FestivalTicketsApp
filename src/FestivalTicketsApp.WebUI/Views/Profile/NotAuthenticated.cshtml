@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "My profile";
+}
+
+<h2>My profile</h2>
+
+<div class="alert alert-warning">
+    <p>
+        To see your profile and tickets, you need to log in or register first.
+    </p>
+    <p>
+        Щоб побачити свій профіль і квитки, спочатку потрібно увійти
+        в акаунт або зареєструватися.
+    </p>
+</div>
+
+<div class="d-flex gap-2">
+    <a asp-controller="Auth"
+       asp-action="Login"
+       class="btn btn-primary">
+        Log in / Увійти
+    </a>
+
+    <a asp-controller="Auth"
+       asp-action="Register"
+       class="btn btn-outline-secondary">
+        Register / Зареєструватися
+    </a>
+</div>

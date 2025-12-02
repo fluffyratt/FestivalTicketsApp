@@ -1,0 +1,94 @@
+@model FestivalTicketsApp.WebUI.Models.Event.EventListViewModel
+
+@{
+    ViewData["Title"] = "Events";
+
+    var cities = Model.CityNames ?? new List<string>();
+    var genres = Model.Genres ?? new List<FestivalTicketsApp.Application.EventService.DTO.GenreDto>();
+
+    string selectedCity = Model.QueryState?.CityName ?? "";
+    int? selectedGenreId = Model.QueryState?.GenreId;
+    string startDate = Model.QueryState?.StartDate?.ToString("yyyy-MM-dd") ?? "";
+    string endDate = Model.QueryState?.EndDate?.ToString("yyyy-MM-dd") ?? "";
+}
+
+<h2>Upcoming events</h2>
+
+<form method="get" class="mb-4">
+    <div class="row g-3 align-items-end">
+
+        <!-- Фільтр по місту -->
+        <div class="col-md-3">
+            <label class="form-label">City</label>
+            <select name="QueryState.CityName" class="form-select">
+                <option value="">All cities</option>
+                @foreach (var city in cities)
+                {
+                    var isSelected = city == selectedCity ? "selected" : null;
+                    <option value="@city" selected="@isSelected">@city</option>
+                }
+            </select>
+        </div>
+
+        <!-- Фільтр по жанру -->
+        <div class="col-md-3">
+            <label class="form-label">Genre</label>
+            <select name="QueryState.GenreId" class="form-select">
+                <option value="">All genres</option>
+                @foreach (var g in genres)
+                {
+                    var isSelected = selectedGenreId.HasValue && selectedGenreId.Value == g.Id
+                        ? "selected"
+                        : null;
+                    <option value="@g.Id" selected="@isSelected">@g.Name</option>
+                }
+            </select>
+        </div>
+
+        <!-- Інтервал дат -->
+        <div class="col-md-2">
+            <label class="form-label">From date</label>
+            <input name="QueryState.StartDate" type="date" class="form-control" value="@startDate" />
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">To date</label>
+            <input name="QueryState.EndDate" type="date" class="form-control" value="@endDate" />
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Events == null || !Model.Events.Any())
+{
+    <p>No events found for selected filters.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var ev in Model.Events)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <!-- Поки що показуємо тільки Id.
+                             Коли ти подивишся, які саме поля є у EventDto,
+                             можеш додати сюди назву, місто, дату і т.д. -->
+                        <h5 class="card-title">Event #@ev.Id</h5>
+
+                        <a asp-controller="Event"
+                           asp-action="Details"
+                           asp-route-id="@ev.Id"
+                           class="btn btn-outline-primary">
+                            Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+

@@ -1,14 +1,109 @@
-﻿@model List<FestivalTicketsApp.Application.EventService.DTO.EventTypeDto>
+﻿@* Головне верхнє меню фестивалю + профіль / логін / реєстрація *@
 
-<nav class="navbar navbar-expand-lg">
-    <ul class="navbar-nav mx-auto">
-        @{
-            foreach (var eventType in Model)
+<nav class="navbar navbar-expand-lg navbar-light cinema-navbar px-4">
+    <div class="container-fluid">
+
+        @* Ліво/центр: пункти меню *@
+        <ul class="navbar-nav mx-auto gap-3">
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Index">Performance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Concert">Concert</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="StandUp">Stand-up</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Theatre">Theatre</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Festival">Festival</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="OpenAir">OpenAir</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Conference">Conference</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Workshop">Workshop</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Movie">Movie</a>
+            </li>
+        </ul>
+
+        @* Праворуч: профіль / логін / реєстрація / вихід *@
+        <ul class="navbar-nav ms-auto">
+
+            @* Кнопка “My profile” – логіка залежить від того, хто залогінений *@
+            <li class="nav-item me-2">
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    if (User.IsInRole("Organizer"))
+                    {
+                        <a class="btn btn-outline-light"
+                           asp-controller="Organizer"
+                           asp-action="Index">
+                            My profile
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-light"
+                           asp-controller="Profile"
+                           asp-action="Index">
+                            My profile
+                        </a>
+                    }
+                }
+                else
+                {
+                    @* не залогінений – ведемо на логін *@
+                    <a class="btn btn-outline-light"
+                       asp-controller="Auth"
+                       asp-action="Login">
+                        My profile
+                    </a>
+                }
+            </li>
+
+            @* Якщо не залогінений – показуємо Login / Register *@
+            @if (User?.Identity?.IsAuthenticated != true)
             {
+                <li class="nav-item me-2">
+                    <a class="btn btn-outline-light"
+                       asp-controller="Auth"
+                       asp-action="Login">
+                        Login
+                    </a>
+                </li>
+
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Event" as asp-action="List" asp-route-id="@eventType.Id">@eventType.Name</a>
+                    <a class="btn btn-primary"
+                       asp-controller="Auth"
+                       asp-action="Register">
+                        Register
+                    </a>
                 </li>
             }
-        }
-    </ul>
+            else
+            {
+                @* Якщо залогінений – показуємо кнопку Logout *@
+                <li class="nav-item">
+                    <form asp-controller="Auth"
+                          asp-action="Logout"
+                          method="post"
+                          class="d-inline">
+                        <button type="submit" class="btn btn-outline-light">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+            }
+        </ul>
+    </div>
 </nav>
+
+

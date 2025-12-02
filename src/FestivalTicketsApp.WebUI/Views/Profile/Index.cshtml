@@ -1,0 +1,43 @@
+@model FestivalTicketsApp.WebUI.Models.Client.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "My profile";
+}
+
+<h2>My profile</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Name @Model.Surname</h5>
+        <p class="card-text">
+            <strong>Email:</strong> @Model.Email<br />
+            <strong>Phone:</strong> @Model.Phone
+        </p>
+    </div>
+</div>
+
+<h3>My tickets</h3>
+
+@if (Model.Tickets == null || !Model.Tickets.Any())
+{
+    <p>You have not purchased any tickets yet.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Ticket ID</th>
+            @* Тут можна буде додати ще колонки: Event, Date, Seat, Price *@
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var t in Model.Tickets)
+        {
+            <tr>
+                <td>@t.Id</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -16,10 +16,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FestivalTicketsApp.WebUI.Controllers;
 
-public class EventController(IEventService eventService,
-                             IHostService hostService,
-                             IClientService clientService,
-                             IBackgroundJobsService backgroundJobsService)
+public class EventController(
+    IEventService eventService,
+    IHostService hostService,
+    IClientService clientService,
+    IBackgroundJobsService backgroundJobsService)
     : Controller
 {
     private readonly IEventService _eventService = eventService;
@@ -27,55 +28,73 @@ public class EventController(IEventService eventService,
     private readonly IClientService _clientService = clientService;
     private readonly IBackgroundJobsService _backgroundJobsService = backgroundJobsService;
 
+    // НОВЕ: стартова сторінка подій (для юзера після логіну)
+    // Вона вибирає "дефолтний" тип події (перший у списку) і віддає ту ж саму сторінку, що і List.
+    [HttpGet]
+    public async Task<IActionResult> Index([FromQuery, Bind(Prefix = "QueryState")] EventListQuery query)
+    {
+        // Отримуємо всі типи подій
+        Result<List<EventTypeDto>> getEventTypesResult = await _eventService.GetEventTypesAsync();
+
+        if (!getEventTypesResult.IsSuccess || getEventTypesResult.Value is null || getEventTypesResult.Value.Count == 0)
+            throw new RequiredDataNotFoundException();
+
+        // За замовчуванням беремо перший тип події як стартовий
+        int defaultEventTypeId = getEventTypesResult.Value[0].Id;
+
+        // Використовуємо вже існуючу логіку списку
+        return await List(defaultEventTypeId, query);
+    }
+
     public async Task<IActionResult> List(int id, [FromQuery, Bind(Prefix = "QueryState")] EventListQuery query)
     {
-         int eventTypeId = id;
+        int eventTypeId = id;
 
-         Result<List<string>> getCityNamesResult = await _hostService.GetCitiesAsync();
+        Result<List<string>> getCityNamesResult = await _hostService.GetCitiesAsync();
 
-         Result<List<GenreDto>> getGenresResult = await _eventService.GetGenresAsync(eventTypeId);
+        Result<List<GenreDto>> getGenresResult = await _eventService.GetGenresAsync(eventTypeId);
 
-         if (!getCityNamesResult.IsSuccess || !getGenresResult.IsSuccess)
-             throw new RequiredDataNotFoundException();
+        if (!getCityNamesResult.IsSuccess || !getGenresResult.IsSuccess)
+            throw new RequiredDataNotFoundException();
 
-         EventFilter eventFilter = new
-         (
-             new PagingFilter(query.PageNum, query.PageSize),
-             query.StartDate,
-             query.EndDate,
-             null,
-             eventTypeId,
-             query.GenreId,
-             query.CityName,
-             ServicesEnums.PlannedEventStatus
-         );
+        EventFilter eventFilter = new
+        (
+            new PagingFilter(query.PageNum, query.PageSize),
+            query.StartDate,
+            query.EndDate,
+            null,
+            eventTypeId,
+            query.GenreId,
+            query.CityName,
+            ServicesEnums.PlannedEventStatus
+        );
 
-         Result<Paginated<EventDto>> getEventsResult = await _eventService.GetEventsAsync(eventFilter);
+        Result<Paginated<EventDto>> getEventsResult = await _eventService.GetEventsAsync(eventFilter);
 
-         EventListViewModel viewModel = new();
+        EventListViewModel viewModel = new();
 
-         viewModel.QueryState = query;
+        viewModel.QueryState = query;
 
-         viewModel.CityNames = getCityNamesResult.Value!;
+        viewModel.CityNames = getCityNamesResult.Value!;
 
-         viewModel.Genres = getGenresResult.Value!;
+        viewModel.Genres = getGenresResult.Value!;
 
-         if (getEventsResult.IsSuccess)
-         {
-             viewModel.Events = getEventsResult.Value!.Value;
+        if (getEventsResult.IsSuccess)
+        {
+            viewModel.Events = getEventsResult.Value!.Value;
 
-             viewModel.CurrentPageNum = getEventsResult.Value.CurrentPage;
+            viewModel.CurrentPageNum = getEventsResult.Value.CurrentPage;
 
-             viewModel.NextPagesAmount = getEventsResult.Value.NextPagesAmount;
-         }
-         else
-         {
-             viewModel.CurrentPageNum = RequestDefaults.PageNum;
+            viewModel.NextPagesAmount = getEventsResult.Value.NextPagesAmount;
+        }
+        else
+        {
+            viewModel.CurrentPageNum = RequestDefaults.PageNum;
 
-             viewModel.NextPagesAmount = RequestDefaults.NextPagesAmount;
-         }
+            viewModel.NextPagesAmount = RequestDefaults.NextPagesAmount;
+        }
 
-         return View(viewModel);
+        return View(viewModel);
     }
 
     public async Task<IActionResult> Details(int id)

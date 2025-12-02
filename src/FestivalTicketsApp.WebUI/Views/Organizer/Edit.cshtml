@@ -1,0 +1,83 @@
+@model FestivalTicketsApp.WebUI.Models.Client.OrganizerCreateEventViewModel
+
+@{
+    ViewData["Title"] = "Edit event";
+}
+
+<h2>Edit event</h2>
+
+<form asp-action="Edit" asp-controller="Organizer" method="post">
+    @Html.AntiForgeryToken()
+
+    @* прихований Id події *@
+    <input type="hidden" asp-for="Id" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EventGenreId" class="form-label"></label>
+        <select asp-for="EventGenreId" class="form-select">
+            <option value="">-- choose genre --</option>
+            @foreach (var g in Model.Genres)
+            {
+                <option value="@g.Id">@g.Name</option>
+            }
+        </select>
+        <span asp-validation-for="EventGenreId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LocationId" class="form-label"></label>
+        <select asp-for="LocationId" class="form-select">
+            <option value="">-- choose location --</option>
+            @foreach (var loc in Model.Locations)
+            {
+                <option value="@loc.Id">@loc.Name</option>
+            }
+        </select>
+        <span asp-validation-for="LocationId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EventStatusId" class="form-label"></label>
+        <select asp-for="EventStatusId" class="form-select">
+            <option value="">-- choose status --</option>
+            @foreach (var st in Model.Statuses)
+            {
+                <option value="@st.Id">@st.Name</option>
+            }
+        </select>
+        <span asp-validation-for="EventStatusId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" class="form-control" type="datetime-local" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Duration" class="form-label"></label>
+        <input asp-for="Duration" class="form-control" type="number" />
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" asp-controller="Organizer" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,49 @@
+@model FestivalTicketsApp.WebUI.Models.Client.OrganizerDashboardViewModel
+
+@{
+    ViewData["Title"] = "Organizer cabinet";
+}
+
+<h2>Organizer cabinet</h2>
+
+<div class="mb-3">
+    <a asp-controller="Organizer"
+       asp-action="Create"
+       class="btn btn-primary">
+        Add event
+    </a>
+</div>
+
+@if (Model.Events == null || !Model.Events.Any())
+{
+    <p>You have no events yet.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th></th> @* колонка для кнопок *@
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var e in Model.Events)
+        {
+            <tr>
+                <td>@e.Id</td>
+                <td>@e.Title</td>
+                <td>
+                    <a asp-controller="Organizer"
+                       asp-action="Edit"
+                       asp-route-id="@e.Id"
+                       class="btn btn-sm btn-outline-primary">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
