@@ -6,17 +6,22 @@ namespace FestivalTicketsApp.Application.EventService;
 
 public interface IEventService
 {
-    public Task<Result<Paginated<EventDto>>> GetEventsAsync(EventFilter filter);
-    
-    public Task<Result<EventDto>> GetEventByIdAsync(int id);
+    Task<Result<SeatDto>> GetSeatByIdAsync(int seatId);
+    Task<Result> UpdateSeatStatusAsync(int seatId, string? status);
 
-    public Task<Result<EventWithDetailsDto>> GetEventWithDetailsAsync(int id);
+    Task<Result<Paginated<EventDto>>> GetEventsAsync(EventFilter filter);
 
-    public Task<Result<List<GenreDto>>> GetGenresAsync(int eventTypeId);
+    Task<Result<EventDto>> GetEventByIdAsync(int id);
 
-    public Task<Result<List<EventTypeDto>>> GetEventTypesAsync();
+    Task<Result<EventWithDetailsDto>> GetEventWithDetailsAsync(int id);
 
-    public Task<Result<int>> PlaneEventAsync(PlaneEventDto caseContext);
+    Task<Result<List<GenreDto>>> GetGenresAsync(int eventTypeId);
 
-    public Task<Result> ArchiveEventAsync(int eventId);
+    Task<Result<List<EventTypeDto>>> GetEventTypesAsync();
+
+    Task<Result<int>> PlaneEventAsync(PlaneEventDto caseContext);
+
+    Task<Result> ArchiveEventAsync(int eventId);
+
+    Task<Result<List<TicketSeatDto>>> GetEventSeatsAsync(int eventId);
 }

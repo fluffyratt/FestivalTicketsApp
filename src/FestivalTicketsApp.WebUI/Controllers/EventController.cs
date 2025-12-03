@@ -28,30 +28,77 @@ public class EventController(
     private readonly IClientService _clientService = clientService;
     private readonly IBackgroundJobsService _backgroundJobsService = backgroundJobsService;
 
-    // НОВЕ: стартова сторінка подій (для юзера після логіну)
-    // Вона вибирає "дефолтний" тип події (перший у списку) і віддає ту ж саму сторінку, що і List.
-    [HttpGet]
-    public async Task<IActionResult> Index([FromQuery, Bind(Prefix = "QueryState")] EventListQuery query)
+    private static readonly Dictionary<int, DateTime> HoldSeats = new();
+
+
+    // --------------------------------------------
+    //  HOLD SEAT
+    // --------------------------------------------
+    [HttpPost]
+    public async Task<IActionResult> HoldSeat(int seatId)
     {
-        // Отримуємо всі типи подій
-        Result<List<EventTypeDto>> getEventTypesResult = await _eventService.GetEventTypesAsync();
+        var seatResult = await _eventService.GetSeatByIdAsync(seatId);
+        if (!seatResult.IsSuccess)
+            return NotFound();
 
-        if (!getEventTypesResult.IsSuccess || getEventTypesResult.Value is null || getEventTypesResult.Value.Count == 0)
-            throw new RequiredDataNotFoundException();
+        var seat = seatResult.Value!;
 
-        // За замовчуванням беремо перший тип події як стартовий
-        int defaultEventTypeId = getEventTypesResult.Value[0].Id;
+        if (seat.Status == "Sold")
+            return BadRequest("Seat already sold.");
 
-        // Використовуємо вже існуючу логіку списку
-        return await List(defaultEventTypeId, query);
+        if (HoldSeats.ContainsKey(seatId) && HoldSeats[seatId] > DateTime.UtcNow)
+            return BadRequest("Seat already reserved.");
+
+        HoldSeats[seatId] = DateTime.UtcNow.AddMinutes(5);
+
+        await _eventService.UpdateSeatStatusAsync(seatId, "Hold");
+
+        return Ok(new { success = true, until = HoldSeats[seatId] });
     }
 
-    public async Task<IActionResult> List(int id, [FromQuery, Bind(Prefix = "QueryState")] EventListQuery query)
+
+    // --------------------------------------------
+    //  GET EVENT SEATS with HOLD logic
+    // --------------------------------------------
+    public async Task<IActionResult> GetEventSeats(int id)
+    {
+        var result = await _eventService.GetEventSeatsAsync(id);
+
+        if (!result.IsSuccess)
+            return BadRequest();
+
+        var seats = result.Value!;
+
+        foreach (var s in seats)
+        {
+            if (HoldSeats.TryGetValue(s.Id, out DateTime expires))
+            {
+                if (expires < DateTime.UtcNow)
+                {
+                    HoldSeats.Remove(s.Id);
+                }
+                else
+                {
+                    s.Status = "Hold";
+                }
+            }
+        }
+
+        return Json(seats);
+    }
+
+
+
+    // --------------------------------------------
+    // ORIGINAL
+    // --------------------------------------------
+
+    public async Task<IActionResult> List(int id,
+        [FromQuery, Bind(Prefix = "QueryState")] EventListQuery query)
     {
         int eventTypeId = id;
 
         Result<List<string>> getCityNamesResult = await _hostService.GetCitiesAsync();
-
         Result<List<GenreDto>> getGenresResult = await _eventService.GetGenresAsync(eventTypeId);
 
         if (!getCityNamesResult.IsSuccess || !getGenresResult.IsSuccess)
@@ -69,50 +116,49 @@ public class EventController(
             ServicesEnums.PlannedEventStatus
         );
 
-        Result<Paginated<EventDto>> getEventsResult = await _eventService.GetEventsAsync(eventFilter);
+        Result<Paginated<EventDto>> getEventsResult =
+            await _eventService.GetEventsAsync(eventFilter);
 
-        EventListViewModel viewModel = new();
-
-        viewModel.QueryState = query;
-
-        viewModel.CityNames = getCityNamesResult.Value!;
-
-        viewModel.Genres = getGenresResult.Value!;
+        EventListViewModel viewModel = new()
+        {
+            QueryState = query,
+            CityNames = getCityNamesResult.Value!,
+            Genres = getGenresResult.Value!
+        };
 
         if (getEventsResult.IsSuccess)
         {
             viewModel.Events = getEventsResult.Value!.Value;
-
             viewModel.CurrentPageNum = getEventsResult.Value.CurrentPage;
-
             viewModel.NextPagesAmount = getEventsResult.Value.NextPagesAmount;
         }
         else
         {
             viewModel.CurrentPageNum = RequestDefaults.PageNum;
-
             viewModel.NextPagesAmount = RequestDefaults.NextPagesAmount;
         }
 
         return View(viewModel);
     }
 
+
     public async Task<IActionResult> Details(int id)
     {
         int eventId = id;
 
-        Result<EventWithDetailsDto> getEventResult = await _eventService.GetEventWithDetailsAsync(eventId);
+        Result<EventWithDetailsDto> getEventResult =
+            await _eventService.GetEventWithDetailsAsync(eventId);
 
         if (!getEventResult.IsSuccess)
             throw new RequiredDataNotFoundException();
 
         EventDetailsViewModel viewModel = new();
 
-        string? userIdRaw = User.FindFirstValue(JwtClaimTypes.Actor);
-        if (userIdRaw is not null
-          && int.TryParse(User.FindFirstValue(JwtClaimTypes.Actor), out int userId))
+        string? userRaw = User.FindFirstValue(JwtClaimTypes.Actor);
+        if (userRaw is not null && int.TryParse(userRaw, out int userId))
         {
-            Result<bool> isInFavourite = await _clientService.IsInFavouriteAsync(eventId, userId);
+            Result<bool> isInFavourite =
+                await _clientService.IsInFavouriteAsync(eventId, userId);
 
             if (isInFavourite.IsSuccess)
                 viewModel.IsInFavourite = isInFavourite.Value;
@@ -124,22 +170,32 @@ public class EventController(
             await _hostService.GetHostedEventsAsync(getEventResult.Value!.HostId);
 
         if (getHostedEventsResult.IsSuccess)
-        {
             viewModel.HostedEvents = getHostedEventsResult.Value;
-        }
 
         return View(viewModel);
     }
+
+
+
+    public IActionResult SeatMap(int id)
+    {
+        return View("SeatMap", id);
+    }
+
+
+
 
     [Authorize(Roles = UserRolesConstants.Manager)]
     public async Task<IActionResult> Plane(int id)
     {
         int hostId = id;
 
-        PlaneEventViewModel viewModel = await BuildPlaneEventModel(hostId);
+        PlaneEventViewModel viewModel =
+            await BuildPlaneEventModel(hostId);
 
         return View(viewModel);
     }
+
 
     [Authorize(Roles = UserRolesConstants.Manager)]
     [HttpPost]
@@ -154,7 +210,8 @@ public class EventController(
         }
         else
         {
-            Result<int> planeResult = await _eventService.PlaneEventAsync(newEventInfo);
+            Result<int> planeResult =
+                await _eventService.PlaneEventAsync(newEventInfo);
 
             if (!planeResult.IsSuccess)
             {
@@ -165,19 +222,29 @@ public class EventController(
             {
                 ModelState.Clear();
                 viewModel = await BuildPlaneEventModel(hostId);
-                await _backgroundJobsService.ScheduleEventArchiveTask(planeResult.Value, newEventInfo.StartTime);
+
+                await _backgroundJobsService
+                    .ScheduleEventArchiveTask(
+                        planeResult.Value,
+                        newEventInfo.StartTime);
+
                 viewModel.IsSucceed = true;
             }
         }
+
         return View(viewModel);
     }
+
+
+
 
     [Authorize(Roles = UserRolesConstants.Manager)]
     public async Task<IActionResult> GenresOptions(int id)
     {
         int eventTypeId = id;
 
-        Result<List<GenreDto>> getGenres = await _eventService.GetGenresAsync(eventTypeId);
+        Result<List<GenreDto>> getGenres =
+            await _eventService.GetGenresAsync(eventTypeId);
 
         return getGenres.IsSuccess switch
         {
@@ -188,19 +255,30 @@ public class EventController(
         };
     }
 
-    private async Task<PlaneEventViewModel> BuildPlaneEventModel(int hostId, PlaneEventDto? input = default)
+
+
+
+    private async Task<PlaneEventViewModel> BuildPlaneEventModel(
+        int hostId,
+        PlaneEventDto? input = default)
     {
         PlaneEventViewModel viewModel = new();
 
-        Result<List<EventTypeDto>> getEventTypes = await _eventService.GetEventTypesAsync();
+        Result<List<EventTypeDto>> getEventTypes =
+            await _eventService.GetEventTypesAsync();
+
         Result<HostHallDetailsDto> getHostHallDetails =
             await _hostService.GetHostHallDetailsAsync(hostId);
+
         if (!getEventTypes.IsSuccess || !getHostHallDetails.IsSuccess)
             throw new RequiredDataNotFoundException();
 
         int eventTypeId = input?.EventTypeId ?? getEventTypes.Value![0].Id;
-        Result<List<GenreDto>> getGenres = await _eventService.GetGenresAsync(eventTypeId);
-        if (!getEventTypes.IsSuccess)
+
+        Result<List<GenreDto>> getGenres =
+            await _eventService.GetGenresAsync(eventTypeId);
+
+        if (!getGenres.IsSuccess)
             throw new RequiredDataNotFoundException();
 
         viewModel.EventTypes = getEventTypes.Value!;
@@ -209,6 +287,7 @@ public class EventController(
 
         int defaultGenreId = getGenres.Value![0].Id;
         DateTime defaultDate = DateTime.Today;
+
         viewModel.NewEventInfo = input ?? new
         (
             "",

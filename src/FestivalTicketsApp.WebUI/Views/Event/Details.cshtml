@@ -6,25 +6,39 @@
             <h1 class="fw-bold">@Model.Event.Title</h1>
         </div>
         <div class="col-2 my-auto">
-        @if (User.Identity.IsAuthenticated)
-        {
-            <partial name="DetailsPartials/FavouritePart" 
-                     model="@(new FavouritePartViewModel 
-                            { 
-                                EventId = int.Parse(ViewContext.RouteData.Values["id"].ToString()), 
-                                IsInFavourite = Model.IsInFavourite ?? false
-                            })"/>
-        }
+            @if (User.Identity.IsAuthenticated)
+            {
+                <partial name="DetailsPartials/FavouritePart"
+                         model="@(new FavouritePartViewModel
+                         {
+                             EventId = int.Parse(ViewContext.RouteData.Values["id"].ToString()),
+                             IsInFavourite = Model.IsInFavourite ?? false
+                         })" />
+            }
         </div>
     </div>
+
     <div class="row mt-4">
-        <div class="col-8">                
-            <partial name="DetailsPartials/DescriptionPart" model="Model.Event"/>
+        <div class="col-8">
+            <partial name="DetailsPartials/DescriptionPart" model="Model.Event" />
         </div>
-        
-        <div class="col-4">                
-            <partial name="DetailsPartials/DetailsPart" model="Model.Event"/>
+
+        <div class="col-4">
+            <partial name="DetailsPartials/DetailsPart" model="Model.Event" />
         </div>
     </div>
-    <partial name="SameHostEventsPart" model="Model.HostedEvents"/>
+
+    <partial name="SameHostEventsPart" model="Model.HostedEvents" />
 </div>
+
+<hr />
+
+@* <!-- Select tickets button that navigates to SeatMap -->
+<div class="container mt-3 mb-5">
+    <a asp-controller="Event"
+       asp-action="SeatMap"
+       asp-route-id="@Model.Event.Id"
+       class="btn btn-primary btn-lg">
+        Select tickets
+    </a>
+</div> *@

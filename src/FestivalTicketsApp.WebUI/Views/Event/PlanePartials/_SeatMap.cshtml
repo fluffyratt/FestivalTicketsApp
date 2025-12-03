@@ -1,0 +1,107 @@
+﻿<div class="seatmap-layout">
+
+    <div class="seatmap-area">
+        <div class="seatmap-stage">Scene</div>
+
+        <div class="seat-map-wrapper">
+            <canvas id="seat-map" width="900" height="500"></canvas>
+        </div>
+    </div>
+
+    <div class="seatmap-legend">
+        <h4>Prices</h4>
+
+        <div class="legend-item"><span class="legend-color green"></span> 50$</div>
+        <div class="legend-item"><span class="legend-color yellow"></span> 100$</div>
+        <div class="legend-item"><span class="legend-color pink"></span> 250$</div>
+
+        <div class="legend-item"><span class="legend-color gray"></span> Sold</div>
+        <div class="legend-item"><span class="legend-color red"></span> In cart</div>
+    </div>
+</div>
+<div class="legend-item"><span class="legend-color blue"></span> Hold (5 min)</div>
+
+
+<style>
+    .seatmap-layout {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .seatmap-area {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .seatmap-stage {
+        background: #ddd;
+        width: 250px;
+        padding: 10px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+
+    .seat-map-wrapper {
+        padding: 20px;
+        background: #f0f0f0;
+        border: 2px solid #ccc;
+        border-radius: 12px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .seatmap-legend {
+        width: 200px;
+        padding-left: 20px;
+        border-left: 2px solid #ccc;
+        margin-left: 20px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 10px;
+        border: 2px solid #222;
+    }
+
+    .green {
+        background: #00c853;
+    }
+
+    .yellow {
+        background: #ffeb3b;
+    }
+
+    .pink {
+        background: #ff00cc;
+    }
+
+    .gray {
+        background: #9e9e9e;
+    }
+
+    .red {
+        background: #ff4444;
+    }
+
+    .blue {
+        background: #4da6ff;
+    }
+</style>
